@@ -21,12 +21,12 @@ This file includes all the required scripts to download and process the files an
 * Appropriately labels the data set with descriptive activity names. 
 * Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
  
-##Packages required
+Packages required
 
 * plyr
 * reshape
  
-#Version of R used
+Version of R used
 3.1.2 (2014-10-31) --"Pumpkin Helmet"
 
 
