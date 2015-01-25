@@ -3,7 +3,7 @@
 
 Assignment Week 3 - Getting and Cleaning Data Course
 
-The purpose of this project is to demonstrate the ability to collect, work with, and clean a data set. The goal is to prepare tidy data that can be used for later analysis. The data is collected from the accelerometers from the Samsung Galaxy S II smartphone.
+The purpose of this project is to demonstrate the ability to collect, work with, and clean a data set. The goal is to prepare tidy data that can be used for later analysis. The data was collected by Jorge L. Reyes-Ortiz, David Anguita, Alessandro Ghio and Luca Oneto from Smartlab www.smartlab.ws. The data was collected from 30 volunteers using smartphones and includes six activities (walking, walking upstairs, walking downstairs, sitting, standing and laying). The data were split into two sets, test and train.
 
 There are two files in this repository:
 
