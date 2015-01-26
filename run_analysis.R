@@ -39,15 +39,15 @@ subj <- rbind(test_subj, train_subj)
 colnames(subj) <- 'subject'
 
 
-merge_activity <- rbind(test_y, train_y)
-merge_activity <- merge(merge_activity, labels, by=1)[,2]
+activity <- rbind(test_y, train_y)
+activity <- merge(activity, labels, by=1)[,2]
 
 
 merge_x <- rbind(test_x, train_x)
 colnames(merge_x) <- features[, 2]
 
 
-merge_all <- cbind(subj, merge_activity, merge_x)
+merge_all <- cbind(subj, activity, merge_x)
 
 
 merge_all_stat <- merge_all[ ,c(1, 2, grep('-mean|-std', colnames(merge_all)))]
