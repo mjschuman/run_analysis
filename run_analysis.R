@@ -6,6 +6,7 @@ setwd("~/.")
 library(dplyr)
 library(tidyr)
 library(data.table)
+library(reshape2)
 
 ##  Loads data if does not already exist.
 
@@ -21,53 +22,42 @@ path <- path.expand("~/data")
 ##
 
 ## Get descriptive column heading names and activity labels
-headings <- read.table(path,files=c("UCI HAR Dataset/features.txt"),
-                       stringsAsFactors=FALSE, col.names=c("head_id","value"))
-variables <- c((headings$value %like% "mean"& 
-                    !(headings$value %like% "meanFreq"))| 
-                   headings$value %like% "std()")
-labels <- read.table(path,files=c("UCI HAR Dataset/activity_labels.txt"),
-                     stringsAsFactors=FALSE, col.names=c("id","activity"))
-##
-##  Determine variable classes, and process data.
-##
-initial <- read.table(path,files=c("UCI HAR Dataset/test/X_test.txt"), nrows =1)
-classes <- sapply(initial, class)
-  
-combinedSubjects <- rbind(read.table9(path,files=c("UCI HAR Dataset/test/subject_test.txt")9),
-                     stringsAsFactors=FALSE, 
-                     col.names=c("subject_id")),
-                    read.table(path,files=c("UCI HAR Dataset/train/subject_train.txt"),
-                        stringsAsFactors=FALSE, 
-                        col.names=c("subject_id")))
+folder_dir <-'UCI HAR Dataset'
+test_dir <-paste(path, 'UCI HAR Dataset/test/', sep='/')
+train_dir <- paste(path, 'UCI HAR Dataset/train/', sep='/')
+features <- read.table(paste(path,folder_dir, 'features.txt' sep='/'))
+labels <- read.table(paste(path, folder.dir, 'activity_labels.txt', sep = '/'))
+
+train_x     <- read.table(paste(train.path, 'X_train.txt', sep = ''))
+test_x      <- read.table(paste(test.path, 'X_test.txt', sep = ''))
+train_y     <- read.table(paste(train.path, 'y_train.txt', sep = ''))
+test_y      <- read.table(paste(test.path, 'y_test.txt', sep = ''))
+test_subj   <- read.table(paste(test.path, 'subject_test.txt', sep = ''))
+train_subj  <- read.table(paste(train.path, 'subject_train.txt', sep = ''))
+
+subj <- rbind(test_subj, train_subj)
+colnames(subj) <- 'subject'
 
 
-combinedLabels <- merge(labels,
-                    rbind(read.table(path,files=c("UCI HAR Dataset/test/y_test.txt"),
-                            stringsAsFactors=FALSE, col.names=c("id")),
-                          read.table(unzip(path,files=c("UCI HAR Dataset/train/y_train.txt")),
-                            stringsAsFactors=FALSE, col.names=c("id"))),by.x="id",by.y="id")   
+merge_activity <- rbind(test_y, train_y)
+merge_activity <- merge(merge_activity, labels, by=1)[,2]
 
-combinedData <- data.table(cbind(combinedLabels,combinedSubjects,
-                      as.data.frame
-                          (rbind(read.table(path,files=c("UCI HAR Dataset/test/X_test.txt"),
-                                                colClasses = classes,
-                                                stringsAsFactors=FALSE, 
-                                                col.names=c(headings$value)),
-                                 read.table(path,files=c("UCI HAR Dataset/train/X_train.txt"),
-                                                colClasses = classes,
-                                                stringsAsFactors=FALSE,
-                                                col.names=c(headings$value))))[,variables]))
 
-combinedDataGroup <- combinedData %>%
-                        gather(measurement,value, -id, -activity, -subject_id) %>%
-                        separate(measurement,c("feature","measure","axis")) %>%
-                        group_by(id, activity,subject_id, feature, measure,axis) %>%      
-                        summarize(avg=mean(value)) %>%
-                        spread(measure,avg) 
+merge_x <- rbind(test_x, train_x)
+colnames(merge_x) <- features[, 2]
+
+
+merge_all <- cbind(subj, merge_activity, merge_x)
+
+
+merge_all_stat <- merge_all[ ,c(1, 2, grep('-mean|-std', colnames(merge_all)))]
+
+## ---- compute means grouped by subject and activity
+melt_data = melt(merge_all_stat, id.var = c('subject', 'activity'))
+mean_stat = dcast(melt_data , subject + activity ~ variable, mean)
 
 ##
 ##  Create TidyDataSet file in working directory.
 ##                        
-write.table(combinedDataGroup,file="./TidyDataSet.txt", row.names=FALSE)
+write.table(mean_stat,file="TidyDataSet.txt", row.names=FALSE)
   
