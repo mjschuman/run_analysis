@@ -18,14 +18,14 @@ if(!file.exists("./data")){
 }
 ##
 ##  Set dataset path and load data and combine into single dataset
-path <- path.expand("~/data")
+path <- path.expand("~/coursera/data")
 ##
 
 ## Get descriptive column heading names and activity labels
 folder_dir <-'UCI HAR Dataset'
 test_dir <-paste(path, 'UCI HAR Dataset/test/', sep='/')
 train_dir <- paste(path, 'UCI HAR Dataset/train/', sep='/')
-features <- read.table(paste(path,folder_dir, 'features.txt' sep='/'))
+features <- read.table(paste(path,folder_dir, 'features.txt', sep='/'))
 labels <- read.table(paste(path, folder.dir, 'activity_labels.txt', sep = '/'))
 
 train_x     <- read.table(paste(train.path, 'X_train.txt', sep = ''))
@@ -60,4 +60,3 @@ mean_stat = dcast(melt_data , subject + activity ~ variable, mean)
 ##  Create TidyDataSet file in working directory.
 ##                        
 write.table(mean_stat,file="TidyDataSet.txt", row.names=FALSE)
-  
